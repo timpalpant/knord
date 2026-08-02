@@ -1,0 +1,95 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(knord VERSION 0.1.0 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+include(GNUInstallDirs)
+
+set(QT_MIN_VERSION 6.5)
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Widgets)
+
+# Found per-component rather than through the KF6 umbrella package, which is
+# provided by extra-cmake-modules. Keeping ECM out of the build means the only
+# build deps are the KF6 runtime libraries that are already pulled in by Plasma.
+find_package(KF6I18n REQUIRED)
+find_package(KF6CoreAddons REQUIRED)
+find_package(KF6Config REQUIRED)
+find_package(KF6Notifications REQUIRED)
+find_package(KF6IconThemes REQUIRED)
+find_package(KF6StatusNotifierItem REQUIRED)
+find_package(KF6WindowSystem REQUIRED)
+
+qt_standard_project_setup(REQUIRES 6.5)
+
+qt_add_executable(knord
+    src/main.cpp
+    src/clirunner.h
+    src/clirunner.cpp
+    src/ptychannel.h
+    src/ptychannel.cpp
+    src/nordvpn.h
+    src/nordvpn.cpp
+    src/nordparse.h
+    src/nordparse.cpp
+    src/locationmodel.h
+    src/locationmodel.cpp
+    src/countryflags.h
+    src/countryflags.cpp
+    src/trayicon.h
+    src/trayicon.cpp
+    src/appsettings.h
+    src/appsettings.cpp
+)
+
+qt_add_qml_module(knord
+    URI io.github.timpalpant.knord
+    VERSION 1.0
+    QML_FILES
+        src/qml/Main.qml
+        src/qml/StatusPage.qml
+        src/qml/LocationsPage.qml
+        src/qml/CitiesPage.qml
+        src/qml/SettingsPage.qml
+        src/qml/AccountPage.qml
+        src/qml/LoginPage.qml
+        src/qml/AllowlistPage.qml
+        src/qml/LocationDelegate.qml
+        src/qml/DetailRow.qml
+)
+
+# The generated QML type registrations include the declaring headers by bare
+# name, so src/ has to be reachable as an include directory.
+target_include_directories(knord PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_link_libraries(knord PRIVATE
+    Qt6::Quick
+    Qt6::QuickControls2
+    Qt6::Widgets
+    KF6::I18n
+    KF6::I18nQml
+    KF6::CoreAddons
+    KF6::ConfigCore
+    KF6::Notifications
+    KF6::IconThemes
+    KF6::StatusNotifierItem
+    KF6::WindowSystem
+)
+
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
+install(TARGETS knord RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES data/io.github.timpalpant.knord.desktop
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+install(FILES data/io.github.timpalpant.knord.svg
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+install(FILES data/io.github.timpalpant.knord.metainfo.xml
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
+# Keeps the KAboutData component name, which is what KNotification looks up.
+install(FILES data/knord.notifyrc
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/knotifications6)

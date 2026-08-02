@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=KNord
+GenericName=VPN Client
+Comment=Connect to NordVPN from your Plasma desktop
+Exec=knord
+Icon=io.github.timpalpant.knord
+Terminal=false
+Categories=Qt;KDE;Network;
+Keywords=VPN;NordVPN;Privacy;Network;
+StartupNotify=true
+StartupWMClass=knord
+X-GNOME-UsesNotifications=true

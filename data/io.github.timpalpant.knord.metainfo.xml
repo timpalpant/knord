@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.timpalpant.knord</id>
+
+  <name>KNord</name>
+  <summary>Native NordVPN client for Plasma</summary>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <developer id="io.github.timpalpant">
+    <name>Tim Palpant</name>
+  </developer>
+
+  <description>
+    <p>
+      KNord is a Kirigami front end for NordVPN, built for the Plasma desktop.
+      It drives the official NordVPN command line client, so it needs no extra
+      privileges and no Electron runtime, and it follows your Breeze theme,
+      colour scheme and icon set.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Connection status with live uptime and transfer counters</li>
+      <li>Quick Connect, or pick a country, city or specialty server group</li>
+      <li>Kill Switch, Threat Protection Lite, post-quantum encryption and custom DNS</li>
+      <li>Allowlist management for ports, port ranges and subnets</li>
+      <li>Optional system tray icon with connect and disconnect</li>
+    </ul>
+    <p>
+      KNord requires the NordVPN client to be installed and its daemon running.
+      An active NordVPN subscription is needed to connect.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">io.github.timpalpant.knord.desktop</launchable>
+
+  <!--
+    TODO before submitting to Flathub: at least one screenshot is required for
+    the store listing, and the image URLs must resolve at build time. Capture
+    the status and locations pages, commit them under docs/screenshots/ so they
+    are published with the website, then uncomment this block.
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://timpalpant.github.io/knord/screenshots/status.png</image>
+      <caption>Connection status, with live uptime and transfer counters</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://timpalpant.github.io/knord/screenshots/locations.png</image>
+      <caption>Choosing a country, city or specialty server group</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://timpalpant.github.io/knord/screenshots/settings.png</image>
+      <caption>Kill Switch, Threat Protection and the rest of the settings</caption>
+    </screenshot>
+  </screenshots>
+  -->
+
+  <url type="homepage">https://timpalpant.github.io/knord/</url>
+  <url type="bugtracker">https://github.com/timpalpant/knord/issues</url>
+  <url type="vcs-browser">https://github.com/timpalpant/knord</url>
+  <url type="contribute">https://github.com/timpalpant/knord/pulls</url>
+
+  <categories>
+    <category>Network</category>
+    <category>Security</category>
+  </categories>
+
+  <keywords>
+    <keyword>VPN</keyword>
+    <keyword>NordVPN</keyword>
+    <keyword>privacy</keyword>
+    <keyword>network</keyword>
+  </keywords>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#a8d4f5</color>
+    <color type="primary" scheme_preference="dark">#134a66</color>
+  </branding>
+
+  <content_rating type="oars-1.1"/>
+
+  <releases>
+    <release version="0.1.0" date="2026-08-02">
+      <description>
+        <p>First release.</p>
+      </description>
+    </release>
+  </releases>
+</component>

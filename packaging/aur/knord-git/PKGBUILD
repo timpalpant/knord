@@ -1,0 +1,58 @@
+# Maintainer: Tim Palpant <tim@palpant.us>
+
+pkgname=knord-git
+_pkgname=knord
+pkgver=0.1.0.r0.g0000000
+pkgrel=1
+pkgdesc="Native Kirigami front end for NordVPN (development version)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/timpalpant/knord"
+license=('GPL-3.0-or-later')
+depends=(
+  'qt6-base'
+  'qt6-declarative'
+  'kirigami'
+  'kirigami-addons'
+  'ki18n'
+  'kcoreaddons'
+  'kconfig'
+  'knotifications'
+  'kiconthemes'
+  'kstatusnotifieritem'
+  'kwindowsystem'
+  # See the release PKGBUILD: virtual name, not nordvpn-bin.
+  'nordvpn'
+)
+optdepends=(
+  'qqc2-desktop-style: native look outside Plasma'
+)
+makedepends=('cmake' 'ninja' 'git')
+provides=("$_pkgname=$pkgver")
+conflicts=("$_pkgname")
+# SKIP is correct for a VCS source and only for a VCS source: git checks the
+# objects it fetches itself. The release PKGBUILD pins a real digest instead.
+source=("$_pkgname::git+$url.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  git describe --long --tags --abbrev=7 2>/dev/null \
+    | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g' \
+    || printf "0.0.0.r%s.g%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+}
+
+build() {
+  cmake -B build -S "$_pkgname" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=ON
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure --no-tests=error
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

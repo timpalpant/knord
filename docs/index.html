@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KNord — a native NordVPN client for Plasma</title>
+<meta name="description" content="KNord is a native Kirigami front end for NordVPN, built for Plasma 6. No Electron runtime and no extra privileges.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+
+<meta property="og:title" content="KNord">
+<meta property="og:description" content="A native Kirigami front end for NordVPN, built for Plasma 6.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://timpalpant.github.io/knord/">
+<meta property="og:image" content="https://timpalpant.github.io/knord/icon.svg">
+
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfbfc;
+    --surface: #ffffff;
+    --border: #e2e4e8;
+    --text: #1b1d21;
+    --muted: #5c6370;
+    --accent: #1d76a8;
+    --accent-hover: #3daee9;
+    --code-bg: #f2f3f5;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181c;
+      --surface: #1d2025;
+      --border: #2c3038;
+      --text: #eceff4;
+      --muted: #9aa1ad;
+      --accent: #3daee9;
+      --accent-hover: #6dc7f5;
+      --code-bg: #22262c;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---- hero ---- */
+  header { padding: 72px 0 56px; text-align: center; }
+  header img { width: 112px; height: 112px; }
+  h1 {
+    margin: 20px 0 8px;
+    font-size: 2.75rem;
+    letter-spacing: -0.02em;
+  }
+  .tagline { margin: 0 auto; max-width: 38ch; color: var(--muted); font-size: 1.15rem; }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .badges img { width: auto; height: 20px; }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color .15s, transform .15s;
+  }
+  .btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+  /* ---- sections ---- */
+  section { padding: 40px 0; border-top: 1px solid var(--border); }
+  h2 { font-size: 1.4rem; margin: 0 0 20px; letter-spacing: -0.01em; }
+  h3 { font-size: 1rem; margin: 24px 0 8px; }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .features li {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .features strong { display: block; margin-bottom: 4px; }
+  .features span { color: var(--muted); font-size: .95rem; }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: .9rem;
+    line-height: 1.5;
+  }
+  code { font-family: ui-monospace, "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace; }
+  p code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: .9em; }
+
+  a { color: var(--accent); }
+
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  ul.plain { padding-left: 20px; color: var(--muted); }
+  ul.plain li { margin: 6px 0; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0 56px;
+    color: var(--muted);
+    font-size: .9rem;
+    text-align: center;
+  }
+  footer p { margin: 6px 0; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <img src="icon.svg" alt="">
+    <h1>KNord</h1>
+    <p class="tagline">A native Kirigami front end for NordVPN, built for Plasma&nbsp;6.</p>
+
+    <div class="badges">
+      <a href="https://github.com/timpalpant/knord/actions/workflows/ci.yml"><img
+        src="https://img.shields.io/github/actions/workflow/status/timpalpant/knord/ci.yml?branch=master&amp;label=CI&amp;logo=github"
+        alt="CI status"></a>
+      <a href="https://github.com/timpalpant/knord/releases"><img
+        src="https://img.shields.io/github/v/release/timpalpant/knord?include_prereleases&amp;label=release&amp;logo=github"
+        alt="Latest release"></a>
+      <a href="https://github.com/timpalpant/knord/blob/master/LICENSE"><img
+        src="https://img.shields.io/badge/licence-GPL--3.0--or--later-blue"
+        alt="Licence"></a>
+    </div>
+
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/timpalpant/knord/releases">Download the latest release</a>
+      <a class="btn" href="https://github.com/timpalpant/knord">Source on GitHub</a>
+    </div>
+  </header>
+
+  <!--
+    A screenshot belongs here. None is included yet: the captures taken during
+    development show real account data. Drop a sanitised image into
+    docs/screenshots/ and reference it from this spot.
+  -->
+
+
+  <section>
+    <h2>What it does</h2>
+    <ul class="features">
+      <li>
+        <strong>Status at a glance</strong>
+        <span>Connection state, server, hostname, IP, technology and protocol, with live uptime and transfer counters.</span>
+      </li>
+      <li>
+        <strong>Locations</strong>
+        <span>Every country with flags, drill-down into cities, and the specialty groups — Double VPN, Onion Over VPN, P2P, Dedicated IP.</span>
+      </li>
+      <li>
+        <strong>All the settings</strong>
+        <span>Kill Switch, Threat Protection Lite, firewall, post-quantum encryption, auto-connect, Meshnet, LAN discovery and custom DNS.</span>
+      </li>
+      <li>
+        <strong>Allowlist</strong>
+        <span>Add and remove ports, port ranges and subnets without dropping to a terminal.</span>
+      </li>
+      <li>
+        <strong>System tray</strong>
+        <span>Optional. State at a glance and connect or disconnect without opening the window; closing then hides rather than quits.</span>
+      </li>
+      <li>
+        <strong>No extra privileges</strong>
+        <span>It drives the official <code>nordvpn</code> command line client, so nothing runs as root and there is no Electron runtime.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Getting started</h2>
+
+    <h3>Arch Linux</h3>
+<pre><code>paru -S knord          # or knord-git for the development version</code></pre>
+
+    <h3>Flatpak</h3>
+    <p>
+      Download <code>knord.flatpak</code> from the
+      <a href="https://github.com/timpalpant/knord/releases">latest release</a>,
+      then:
+    </p>
+<pre><code>flatpak install --user knord.flatpak
+flatpak run io.github.timpalpant.knord</code></pre>
+    <p class="note">
+      The Flatpak still needs the NordVPN client installed <em>on the host</em>:
+      it is proprietary and depends on a systemd system service, so it cannot be
+      bundled. KNord runs every command through <code>flatpak-spawn --host</code>,
+      which is why the package asks for <code>--talk-name=org.freedesktop.Flatpak</code>.
+      That is a broad permission, effectively host access; if you would rather
+      not grant it, use the Arch package or build from source.
+    </p>
+
+    <h3>From source</h3>
+<pre><code>git clone https://github.com/timpalpant/knord.git
+cd knord
+cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+sudo cmake --install build --prefix /usr</code></pre>
+
+    <p>
+      You will need Qt&nbsp;6.5+, KDE Frameworks&nbsp;6 and the NordVPN client,
+      with your user in the <code>nordvpn</code> group. The full list is in the
+      <a href="https://github.com/timpalpant/knord#requirements">README</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>How it talks to NordVPN</h2>
+    <p>
+      Everything goes through the official <code>nordvpn</code> CLI. Commands
+      are serialised through a single queue, because the daemon does not handle
+      concurrent clients well, and run with <code>LC_ALL=C.UTF-8</code> so the
+      output labels the parsers key off stay stable.
+    </p>
+    <p>
+      Connection status is polled every two seconds while the window is visible
+      and every ten when it is hidden in the tray. After any change the app
+      re-reads <code>nordvpn status</code> rather than trusting the output of
+      the command it just ran.
+    </p>
+    <p class="note">
+      Known limitations: Meshnet is exposed only as an on/off switch, and
+      per-server selection and server load are not shown — the CLI does not
+      report them.
+    </p>
+  </section>
+
+  <section>
+    <h2>Contributing</h2>
+    <p>
+      Bug reports and patches are welcome — see
+      <a href="https://github.com/timpalpant/knord/issues">issues</a> and
+      <a href="https://github.com/timpalpant/knord/pulls">pull requests</a>.
+      KNord is free software under the GPL-3.0-or-later.
+    </p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>
+      KNord is an unofficial, community-built client. It is not affiliated
+      with, endorsed by, or supported by Nord Security. An active NordVPN
+      subscription and the official client are required.
+    </p>
+    <p>© 2026 the KNord authors · GPL-3.0-or-later</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+# Maintainer: Tim Palpant <tim@palpant.us>
+
+pkgname=knord
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Native Kirigami front end for NordVPN"
+arch=('x86_64' 'aarch64')
+url="https://github.com/timpalpant/knord"
+license=('GPL-3.0-or-later')
+depends=(
+  'qt6-base'
+  'qt6-declarative'
+  'kirigami'
+  'kirigami-addons'
+  'ki18n'
+  'kcoreaddons'
+  'kconfig'
+  'knotifications'
+  'kiconthemes'
+  'kstatusnotifieritem'
+  'kwindowsystem'
+  # KNord is a front end for this client and does nothing without it. Depend on
+  # the virtual name rather than nordvpn-bin, so any package providing the CLI
+  # satisfies it.
+  'nordvpn'
+)
+optdepends=(
+  'qqc2-desktop-style: native look outside Plasma'
+)
+makedepends=('cmake' 'ninja')
+# Note: extra-cmake-modules is deliberately not required; each KF6 component is
+# located with its own find_package.
+# The release asset built by .github/workflows/release.yml, not the archive
+# GitHub generates on demand: the uploaded file is immutable and its digest is
+# published alongside it, so there is a fixed value to check against.
+source=("$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
+# Never SKIP here. This is a fixed tarball, not a VCS checkout, so SKIP would
+# mean makepkg builds whatever the download happened to return. Take the value
+# from knord-$pkgver.tar.gz.sha256 in the release; the release workflow prints
+# the line to paste. An unreplaced placeholder fails the build, which is the
+# point -- a wrong hash must stop the build, not be waved through.
+sha256sums=('REPLACE_WITH_RELEASE_SHA256')
+
+build() {
+  cmake -B build -S "$pkgname-$pkgver" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=ON
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure --no-tests=error
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

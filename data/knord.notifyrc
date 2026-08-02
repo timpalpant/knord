@@ -1,0 +1,14 @@
+[Global]
+IconName=network-vpn
+Comment=KNord
+Name=KNord
+
+[Event/connected]
+Name=VPN connected
+Comment=A VPN connection was established
+Action=Popup
+
+[Event/failed]
+Name=VPN action failed
+Comment=A connect, disconnect or settings change did not succeed
+Action=Popup
