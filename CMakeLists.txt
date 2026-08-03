@@ -93,3 +93,22 @@ install(FILES data/io.github.timpalpant.knord.metainfo.xml
 # Keeps the KAboutData component name, which is what KNotification looks up.
 install(FILES data/knord.notifyrc
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/knotifications6)
+
+# The CI and release workflows build native DEB and RPM packages from the
+# normal install tree, so keep their metadata next to the install rules.
+set(CPACK_PACKAGE_NAME "knord")
+set(CPACK_PACKAGE_VENDOR "Timothy Palpant")
+set(CPACK_PACKAGE_CONTACT "Timothy Palpant <tim@palpant.us>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Native NordVPN client for KDE Plasma")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
+set(CPACK_DEBIAN_PACKAGE_SECTION "net")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS
+    "nordvpn, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-org-kde-kirigami, qml6-module-org-kde-kirigamiaddons-formcard")
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_RPM_PACKAGE_LICENSE "GPL-3.0-or-later")
+set(CPACK_RPM_PACKAGE_GROUP "Applications/Internet")
+set(CPACK_RPM_PACKAGE_REQUIRES "nordvpn, qt6-qtdeclarative, kf6-kirigami, kf6-kirigami-addons")
+set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+include(CPack)

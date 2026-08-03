@@ -62,6 +62,25 @@ build locally:
 sudo pacman -U knord-*.pkg.tar.zst
 ```
 
+### Debian / Ubuntu
+
+Download `knord_*.deb` from the [latest release](https://github.com/timpalpant/knord/releases), then:
+
+```sh
+sudo apt install ./knord_*.deb
+```
+
+### Fedora / RPM-based distributions
+
+Download `knord-*.rpm` from the [latest release](https://github.com/timpalpant/knord/releases), then:
+
+```sh
+sudo dnf install ./knord-*.rpm
+```
+
+Install the official NordVPN client first: it supplies the required
+`nordvpn` command and system service.
+
 ### Flatpak
 
 Download `knord.flatpak` from the
