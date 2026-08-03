@@ -5,6 +5,7 @@
 #
 #   packaging/build-arch-package.sh            # -> dist/*.pkg.tar.zst
 #   packaging/build-arch-package.sh --outdir X # write somewhere else
+#   packaging/build-arch-package.sh --nodeps    # dependencies are preinstalled
 #
 # The AUR PKGBUILD downloads a release tarball, which does not exist yet while
 # a release is being cut. So the source array is repointed at a tarball made
@@ -23,11 +24,16 @@ readonly REPO_ROOT="$(cd "$(dirname "$SELF")/.." && pwd)"
 readonly PKGNAME="knord"
 
 outdir="$REPO_ROOT/dist"
+skip_dependency_check=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --outdir)
             outdir="$(realpath -m "$2")"
             shift 2
+            ;;
+        --nodeps)
+            skip_dependency_check=true
+            shift
             ;;
         *)
             echo "unknown argument: $1" >&2
@@ -42,14 +48,20 @@ done
 if [[ "$(id -u)" -eq 0 ]]; then
     if ! id builder &>/dev/null; then
         useradd -m builder
-        # makepkg -s installs the declared dependencies, which needs pacman.
-        echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
-        chmod 0440 /etc/sudoers.d/builder
     fi
+    # The packaging lint job may have created this user already.  Provision the
+    # narrowly-scoped sudo rule independently so makepkg can install declared
+    # dependencies in either order.
+    echo 'builder ALL=(ALL) NOPASSWD: /usr/bin/pacman' > /etc/sudoers.d/builder
+    chmod 0440 /etc/sudoers.d/builder
     mkdir -p "$outdir"
     chown -R builder "$REPO_ROOT" "$outdir"
+    reexec_args=(--outdir "$outdir")
+    if [[ "$skip_dependency_check" == true ]]; then
+        reexec_args+=(--nodeps)
+    fi
     exec sudo -u builder --preserve-env=GITHUB_REF_NAME \
-        "$SELF" --outdir "$outdir"
+        "$SELF" "${reexec_args[@]}"
 fi
 
 # ---------------------------------------------------------------------------
@@ -92,8 +104,14 @@ printf "\noptions=('!debug')\n" >> PKGBUILD
 # ---------------------------------------------------------------------------
 # -s installs missing dependencies, -f overwrites a previous build of the same
 # version. Debug packages are off: they double the build time and nothing
-# consumes them here.
-makepkg -sf --noconfirm --noprogressbar
+# consumes them here.  CI preinstalls build dependencies and uses --nodeps
+# because `nordvpn` is intentionally a virtual runtime dependency supplied by
+# a third-party package, not by the official Arch repositories.
+makepkg_args=(-sf --noconfirm --noprogressbar)
+if [[ "$skip_dependency_check" == true ]]; then
+    makepkg_args+=(--nodeps)
+fi
+makepkg "${makepkg_args[@]}"
 
 mkdir -p "$outdir"
 mv ./*.pkg.tar.zst "$outdir/"

@@ -147,7 +147,13 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Install dependencies
-        run: pacman -Syu --noconfirm --needed base-devel git pacman-contrib
+        run: |
+          pacman -Syu --noconfirm --needed \
+            base-devel cmake ninja git pacman-contrib \
+            qt6-base qt6-declarative qt6-tools \
+            kirigami kirigami-addons ki18n kcoreaddons kconfig \
+            knotifications kiconthemes kstatusnotifieritem kwindowsystem \
+            qqc2-desktop-style
 
       - uses: actions/checkout@v4
 
@@ -175,8 +181,11 @@ jobs:
 
       # Builds the pacman package the release ships, from this commit, so a
       # broken PKGBUILD surfaces here rather than while cutting a release.
+      # `nordvpn` is a virtual runtime dependency supplied by an AUR package,
+      # so the official Arch CI image preinstalls build dependencies and skips
+      # only dependency resolution while it builds this package.
       - name: Build the pacman package
-        run: ./packaging/build-arch-package.sh --outdir "$PWD/dist"
+        run: ./packaging/build-arch-package.sh --nodeps --outdir "$PWD/dist"
 
       - uses: actions/upload-artifact@v4
         with:

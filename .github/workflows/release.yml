@@ -124,17 +124,25 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Install dependencies
-        run: pacman -Syu --noconfirm --needed base-devel git pacman-contrib sudo
+        run: |
+          pacman -Syu --noconfirm --needed \
+            base-devel cmake ninja git pacman-contrib sudo \
+            qt6-base qt6-declarative qt6-tools \
+            kirigami kirigami-addons ki18n kcoreaddons kconfig \
+            knotifications kiconthemes kstatusnotifieritem kwindowsystem \
+            qqc2-desktop-style
 
       - uses: actions/checkout@v4
 
       - name: Trust the workspace
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      # Uses the AUR PKGBUILD with its source repointed at this checkout, so
-      # the published package is built the same way AUR users build theirs.
+      # Uses the AUR PKGBUILD with its source repointed at this checkout.  The
+      # `nordvpn` virtual runtime dependency comes from the AUR, so build
+      # dependencies are preinstalled above and only dependency resolution is
+      # skipped here.
       - name: Build the package
-        run: ./packaging/build-arch-package.sh --outdir "$PWD/dist"
+        run: ./packaging/build-arch-package.sh --nodeps --outdir "$PWD/dist"
 
       - uses: actions/upload-artifact@v4
         with:
