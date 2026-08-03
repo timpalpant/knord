@@ -45,19 +45,11 @@ follows your Breeze theme, colour scheme and icon set.
 - Qt 6.5 or newer
 - The NordVPN client, with your user in the `nordvpn` group
 
-The build deliberately avoids `extra-cmake-modules`: each KF6 component is
-located with its own `find_package`, so the only things you need installed are
-the runtime libraries Plasma already ships.
-
 ## Installing
 
 ### Arch Linux (AUR)
 
-```sh
-paru -S knord          # or knord-git for the development version
-```
-
-Each release also attaches a prebuilt `*.pkg.tar.zst`, if you would rather not
+Each release attaches a prebuilt `*.pkg.tar.zst`, if you would rather not
 build locally:
 
 ```sh
@@ -73,9 +65,6 @@ Download `knord.flatpak` from the
 flatpak install --user knord.flatpak
 flatpak run io.github.timpalpant.knord
 ```
-
-Once it is on Flathub, `flatpak install flathub io.github.timpalpant.knord`
-will work instead.
 
 The Flatpak still needs the NordVPN client installed **on the host**: it is
 proprietary and depends on a systemd system service, so it cannot be bundled.
@@ -132,22 +121,6 @@ Connection status is polled every two seconds while the window is visible and
 every ten seconds when it is hidden in the tray. After any change the app
 re-reads `nordvpn status` and `nordvpn settings` rather than trusting the
 output of the command it just ran.
-
-### Cutting a release
-
-1. Bump `project(knord VERSION ...)` in `CMakeLists.txt` and `pkgver` in
-   `packaging/aur/knord/PKGBUILD`.
-2. Add a `<release version="X.Y.Z">` entry to the AppStream metainfo, and bump
-   the `tag:` in the Flathub manifest.
-3. Push a `vX.Y.Z` tag.
-
-The release workflow refuses the tag unless it matches the version in
-`CMakeLists.txt` and has a matching `<release>` entry, then builds three
-artifacts — source tarball, Arch package, Flatpak bundle — each with a
-`.sha256`, and drafts a GitHub release. It also prints the `sha256sums=(...)`
-line for the AUR PKGBUILD; paste that in before publishing the draft.
-
-The website deploys from the same tag.
 
 ## Known limitations
 
