@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     KLocalizedString::setApplicationDomain(QByteArrayLiteral("knord"));
 
     KAboutData about(
-        QStringLiteral("knord"), i18n("KNord"), QStringLiteral("0.1.0"), i18n("A native Plasma front end for NordVPN"), KAboutLicense::GPL_V3);
+        QStringLiteral("knord"), i18n("KNord"), QStringLiteral("0.1.1"), i18n("A native Plasma front end for NordVPN"), KAboutLicense::GPL_V3);
     about.setDesktopFileName(QStringLiteral("io.github.timpalpant.knord"));
     KAboutData::setApplicationData(about);
 

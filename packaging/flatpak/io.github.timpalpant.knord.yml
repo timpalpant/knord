@@ -32,4 +32,4 @@ modules:
     sources:
       - type: git
         url: https://github.com/timpalpant/knord.git
-        tag: v0.1.0
+        tag: v0.1.1

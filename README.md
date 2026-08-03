@@ -55,8 +55,8 @@ follows your Breeze theme, color scheme and icon set.
 
 ### Arch Linux
 
-Each release attaches a prebuilt `*.pkg.tar.zst`, if you would rather not
-build locally:
+Download `knord-*.pkg.tar.zst` from the
+[latest release](https://github.com/timpalpant/knord/releases), then:
 
 ```sh
 sudo pacman -U knord-*.pkg.tar.zst
