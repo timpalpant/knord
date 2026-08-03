@@ -1,6 +1,6 @@
 # Same as io.github.timpalpant.knord.yml, but builds the working tree instead of
-# a published tag. Used by CI and for local `flatpak-builder` runs; the Flathub
-# submission uses the tagged manifest.
+# a published tag. Used by CI and for local `flatpak-builder` runs; tagged
+# releases use the tagged manifest.
 id: io.github.timpalpant.knord
 runtime: org.kde.Platform
 runtime-version: '6.9'

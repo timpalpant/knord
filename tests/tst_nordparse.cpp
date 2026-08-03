@@ -194,7 +194,7 @@ void TestNordParse::summarisesErrors()
 
 void TestNordParse::sanitizesAnsiAndSpinners()
 {
-    // Colour codes plus a spinner that redraws the line with carriage returns.
+    // Color codes plus a spinner that redraws the line with carriage returns.
     const QString raw = QStringLiteral("\x1B[32mConnecting\x1B[0m\n"
                                        "|\rConnecting to United States #1\r\x1B[KConnected to United States #1\n");
 

@@ -2,21 +2,27 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/timpalpant/knord/ci.yml?branch=master&label=CI&logo=github)](https://github.com/timpalpant/knord/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/timpalpant/knord?include_prereleases&label=release&logo=github)](https://github.com/timpalpant/knord/releases)
-[![Flathub](https://img.shields.io/flathub/v/io.github.timpalpant.knord?logo=flathub)](https://flathub.org/apps/io.github.timpalpant.knord)
-[![AUR](https://img.shields.io/aur/version/knord?logo=archlinux)](https://aur.archlinux.org/packages/knord)
-[![Licence](https://img.shields.io/badge/licence-GPL--3.0--or--later-blue)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 
 A native Kirigami front end for NordVPN, built for Plasma 6.
 
 It drives the official `nordvpn` command line client, so it needs no extra
 privileges and no Electron runtime — it is a normal Qt Quick application that
-follows your Breeze theme, colour scheme and icon set.
+follows your Breeze theme, color scheme and icon set.
 
 **Website:** <https://timpalpant.github.io/knord/>
 
 > KNord is an unofficial, community-built client. It is not affiliated with,
 > endorsed by, or supported by Nord Security. An active NordVPN subscription
 > and the official client are required.
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/status.png" alt="KNord connection status" width="31%">
+  <img src="docs/screenshots/locations.png" alt="KNord locations" width="31%">
+  <img src="docs/screenshots/settings.png" alt="KNord settings" width="31%">
+</p>
 
 ## Features
 
@@ -47,7 +53,7 @@ follows your Breeze theme, colour scheme and icon set.
 
 ## Installing
 
-### Arch Linux (AUR)
+### Arch Linux
 
 Each release attaches a prebuilt `*.pkg.tar.zst`, if you would rather not
 build locally:
@@ -71,7 +77,7 @@ proprietary and depends on a systemd system service, so it cannot be bundled.
 KNord runs every command through `flatpak-spawn --host`, which is why the
 package asks for `--talk-name=org.freedesktop.Flatpak`. That is a broad
 permission, effectively host access; if you would rather not grant it, use the
-AUR package or build from source instead.
+Arch package or build from source instead.
 
 ### From source
 
@@ -113,7 +119,7 @@ failures.
 
 ## How it talks to NordVPN
 
-Everything goes through the `nordvpn` CLI. Commands are serialised through a
+Everything goes through the `nordvpn` CLI. Commands are serialized through a
 single queue, because the daemon does not handle concurrent clients well, and
 run with `LC_ALL=C.UTF-8` so the output labels the parsers key off stay stable.
 
@@ -129,6 +135,6 @@ output of the command it just ran.
 - Server load and per-server selection are not shown; the CLI does not report
   them.
 
-## Licence
+## License
 
 GPL-3.0-or-later.

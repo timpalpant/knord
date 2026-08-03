@@ -1,8 +1,8 @@
 # Cuts a release when a vX.Y.Z tag is pushed.
 #
 # Three artifacts are published, plus a checksum for each:
-#   1. knord-X.Y.Z.tar.gz         source bundle (what the AUR package pins)
-#   2. knord-X.Y.Z-*.pkg.tar.zst  Arch package, built with the AUR PKGBUILD
+#   1. knord-X.Y.Z.tar.gz         source bundle (pinned by the release PKGBUILD)
+#   2. knord-X.Y.Z-*.pkg.tar.zst  Arch package, built with the release PKGBUILD
 #   3. knord.flatpak              single-file Flatpak bundle
 #
 # GitHub attaches its own "Source code (zip/tar.gz)" links to every release,
@@ -48,8 +48,7 @@ jobs:
 
       - name: Check the tag agrees with the project metadata
         # A release whose metadata disagrees with its tag causes confusing
-        # breakage downstream in the AUR and on Flathub, so fail before
-        # anything is published.
+        # breakage in release packaging, so fail before anything is published.
         run: |
           tag="${GITHUB_REF_NAME#v}"
           project=$(grep -oP 'project\(knord VERSION \K[0-9.]+' CMakeLists.txt)
@@ -80,25 +79,25 @@ jobs:
             -o "$name.tar.gz" "$GITHUB_REF_NAME"
           sha256sum "$name.tar.gz" > "$name.tar.gz.sha256"
 
-      # The AUR package pins this tarball by digest, so the value has to travel
+      # The release PKGBUILD pins this tarball by digest, so the value has to travel
       # from here into the PKGBUILD. A stale digest left over from an earlier
       # version is a hard error: it would either break the build or, worse,
       # describe a file nobody is actually shipping.
-      - name: Report the AUR checksum
+      - name: Report the release PKGBUILD checksum
         run: |
           name="knord-${GITHUB_REF_NAME#v}"
           digest=$(cut -d' ' -f1 < "$name.tar.gz.sha256")
-          recorded=$(sed -n "s/^sha256sums=('\(.*\)')/\1/p" packaging/aur/knord/PKGBUILD)
+          recorded=$(sed -n "s/^sha256sums=('\(.*\)')/\1/p" packaging/arch/knord/PKGBUILD)
 
           if [ "$recorded" != "$digest" ] && [ "$recorded" != "REPLACE_WITH_RELEASE_SHA256" ]; then
-            echo "::error::packaging/aur/knord/PKGBUILD pins $recorded, but this tarball is $digest"
+            echo "::error::packaging/arch/knord/PKGBUILD pins $recorded, but this tarball is $digest"
             exit 1
           fi
 
           {
-            echo "### AUR package"
+            echo "### Release PKGBUILD"
             echo
-            echo "Before publishing the draft, set this in \`packaging/aur/knord/PKGBUILD\`:"
+            echo "Before publishing the draft, set this in \`packaging/arch/knord/PKGBUILD\`:"
             echo
             echo '```sh'
             echo "sha256sums=('$digest')"
@@ -137,8 +136,9 @@ jobs:
       - name: Trust the workspace
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      # Uses the AUR PKGBUILD with its source repointed at this checkout.  The
-      # `nordvpn` virtual runtime dependency comes from the AUR, so build
+      # Uses the release PKGBUILD with its source repointed at this checkout.
+      # The `nordvpn` virtual runtime dependency comes from outside the official
+      # Arch repositories, so build
       # dependencies are preinstalled above and only dependency resolution is
       # skipped here.
       - name: Build the package
@@ -164,17 +164,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder
           flatpak remote-add --if-not-exists --user \
-            flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+            kde-runtime https://dl.flathub.org/repo/flathub.flatpakrepo
 
       - name: Install the KDE runtime
         run: |
-          flatpak install --user --noninteractive flathub \
+          flatpak install --user --noninteractive kde-runtime \
             org.kde.Platform//6.9 org.kde.Sdk//6.9
 
       - name: Build the bundle
         # The CI manifest builds this checkout, which at a tag is the tagged
-        # source. The Flathub manifest pins the tag instead and is submitted
-        # separately.
+        # source. The tagged release manifest pins the tag instead.
         run: |
           flatpak-builder --user --disable-rofiles-fuse --force-clean \
             --repo=flatpak-repo build-flatpak \
@@ -206,16 +205,15 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          # Drafted rather than published: the AUR checksum has to be pasted
-          # into the PKGBUILD before the release is announced.
+          # Drafted rather than published: the release PKGBUILD checksum must
+          # be recorded before the release is announced.
           draft: true
           generate_release_notes: true
           files: artifacts/*
           body: |
             ### Install
 
-            **Arch Linux** — `paru -S knord`, or install the attached package
-            directly:
+            **Arch Linux** — install the attached package directly:
 
             ```sh
             sudo pacman -U knord-*.pkg.tar.zst
@@ -231,5 +229,5 @@ jobs:
             KNord drives the official `nordvpn` client, which must be installed
             on the host and is not bundled.
 
-            **From source** — `knord-*.tar.gz` is the release tarball the AUR
-            package pins. A `.sha256` accompanies every artifact.
+            **From source** — `knord-*.tar.gz` is the release tarball used by
+            the release PKGBUILD. A `.sha256` accompanies every artifact.

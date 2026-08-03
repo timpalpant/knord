@@ -118,6 +118,25 @@
   .features strong { display: block; margin-bottom: 4px; }
   .features span { color: var(--muted); font-size: .95rem; }
 
+  .screenshots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .screenshots figure {
+    margin: 0;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .screenshots img { display: block; width: 100%; height: auto; }
+  .screenshots figcaption {
+    padding: 10px 14px;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+
   pre {
     background: var(--code-bg);
     border: 1px solid var(--border);
@@ -172,8 +191,8 @@
         src="https://img.shields.io/github/v/release/timpalpant/knord?include_prereleases&amp;label=release&amp;logo=github"
         alt="Latest release"></a>
       <a href="https://github.com/timpalpant/knord/blob/master/LICENSE"><img
-        src="https://img.shields.io/badge/licence-GPL--3.0--or--later-blue"
-        alt="Licence"></a>
+        src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"
+        alt="License"></a>
     </div>
 
     <div class="actions">
@@ -182,12 +201,23 @@
     </div>
   </header>
 
-  <!--
-    A screenshot belongs here. None is included yet: the captures taken during
-    development show real account data. Drop a sanitised image into
-    docs/screenshots/ and reference it from this spot.
-  -->
-
+  <section>
+    <h2>Screenshots</h2>
+    <div class="screenshots">
+      <figure>
+        <img src="screenshots/status.png" alt="KNord connection status">
+        <figcaption>Connection status</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/locations.png" alt="KNord country and city selection">
+        <figcaption>Locations</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/settings.png" alt="KNord settings">
+        <figcaption>Settings</figcaption>
+      </figure>
+    </div>
+  </section>
 
   <section>
     <h2>What it does</h2>
@@ -223,7 +253,12 @@
     <h2>Getting started</h2>
 
     <h3>Arch Linux</h3>
-<pre><code>paru -S knord          # or knord-git for the development version</code></pre>
+    <p>
+      Download <code>knord-*.pkg.tar.zst</code> from the
+      <a href="https://github.com/timpalpant/knord/releases">latest release</a>,
+      then:
+    </p>
+<pre><code>sudo pacman -U knord-*.pkg.tar.zst</code></pre>
 
     <h3>Flatpak</h3>
     <p>
@@ -260,7 +295,7 @@ sudo cmake --install build --prefix /usr</code></pre>
     <h2>How it talks to NordVPN</h2>
     <p>
       Everything goes through the official <code>nordvpn</code> CLI. Commands
-      are serialised through a single queue, because the daemon does not handle
+      are serialized through a single queue, because the daemon does not handle
       concurrent clients well, and run with <code>LC_ALL=C.UTF-8</code> so the
       output labels the parsers key off stay stable.
     </p>

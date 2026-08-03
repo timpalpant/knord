@@ -17,7 +17,7 @@
       KNord is a Kirigami front end for NordVPN, built for the Plasma desktop.
       It drives the official NordVPN command line client, so it needs no extra
       privileges and no Electron runtime, and it follows your Breeze theme,
-      colour scheme and icon set.
+      color scheme and icon set.
     </p>
     <p>Features:</p>
     <ul>
@@ -35,12 +35,6 @@
 
   <launchable type="desktop-id">io.github.timpalpant.knord.desktop</launchable>
 
-  <!--
-    TODO before submitting to Flathub: at least one screenshot is required for
-    the store listing, and the image URLs must resolve at build time. Capture
-    the status and locations pages, commit them under docs/screenshots/ so they
-    are published with the website, then uncomment this block.
-
   <screenshots>
     <screenshot type="default">
       <image>https://timpalpant.github.io/knord/screenshots/status.png</image>
@@ -55,7 +49,6 @@
       <caption>Kill Switch, Threat Protection and the rest of the settings</caption>
     </screenshot>
   </screenshots>
-  -->
 
   <url type="homepage">https://timpalpant.github.io/knord/</url>
   <url type="bugtracker">https://github.com/timpalpant/knord/issues</url>

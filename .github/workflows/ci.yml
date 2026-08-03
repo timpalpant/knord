@@ -15,7 +15,7 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     # KNord targets current KF6; Arch tracks it closest, and the container keeps
-    # the CI toolchain identical to what the AUR package builds against.
+    # the CI toolchain identical to what the Arch package builds against.
     container: archlinux:latest
     steps:
       - name: Install dependencies
@@ -164,7 +164,7 @@ jobs:
         run: |
           useradd -m builder
           chown -R builder .
-          for dir in packaging/aur/*/; do
+          for dir in packaging/arch/*/; do
             echo "== $dir"
             bash -n "$dir/PKGBUILD"
             su builder -c "cd '$dir' && makepkg --printsrcinfo > /dev/null"
@@ -174,14 +174,15 @@ jobs:
       # SKIP belongs only to knord-git, whose source is a git checkout.
       - name: Check the release tarball is pinned by digest
         run: |
-          if grep -q "^sha256sums=('SKIP')" packaging/aur/knord/PKGBUILD; then
-            echo "::error::packaging/aur/knord/PKGBUILD downloads a tarball without checking it"
+          if grep -q "^sha256sums=('SKIP')" packaging/arch/knord/PKGBUILD; then
+            echo "::error::packaging/arch/knord/PKGBUILD downloads a tarball without checking it"
             exit 1
           fi
 
       # Builds the pacman package the release ships, from this commit, so a
       # broken PKGBUILD surfaces here rather than while cutting a release.
-      # `nordvpn` is a virtual runtime dependency supplied by an AUR package,
+      # `nordvpn` is a virtual runtime dependency supplied outside the official
+      # Arch repositories,
       # so the official Arch CI image preinstalls build dependencies and skips
       # only dependency resolution while it builds this package.
       - name: Build the pacman package
@@ -208,11 +209,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder
           flatpak remote-add --if-not-exists --user \
-            flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+            kde-runtime https://dl.flathub.org/repo/flathub.flatpakrepo
 
       - name: Install the KDE runtime
         run: |
-          flatpak install --user --noninteractive flathub \
+          flatpak install --user --noninteractive kde-runtime \
             org.kde.Platform//6.9 org.kde.Sdk//6.9
 
       - name: Cache the flatpak-builder state
@@ -223,7 +224,7 @@ jobs:
           restore-keys: flatpak-builder-
 
       - name: Build
-        # The CI manifest builds this checkout; the tagged one is for Flathub.
+        # The CI manifest builds this checkout; the tagged one is for releases.
         run: |
           flatpak-builder --user --disable-rofiles-fuse --force-clean \
             --repo=flatpak-repo build-flatpak \
