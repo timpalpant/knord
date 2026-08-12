@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(knord VERSION 0.1.1 LANGUAGES CXX)
+project(knord VERSION 0.1.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -103,12 +103,27 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Native NordVPN client for KDE Plasma")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
 set(CPACK_DEBIAN_PACKAGE_SECTION "net")
+# qml6-module-org-kde-desktop provides the "org.kde.desktop" QQC2 style
+# main.cpp selects -- without it the QML engine refuses to load at all
+# ("module \"org.kde.desktop\" is not installed"), confirmed by installing
+# this .deb in a bare debian:trixie container and forcing that style via
+# QT_QUICK_CONTROLS_STYLE. On Debian this happens to already be pulled in
+# transitively (qml6-module-org-kde-kirigamiaddons-formcard -> ...-components
+# -> ...-treeview -> qml6-module-org-kde-desktop), but that chain is an
+# accident of how kirigami-addons happens to split its submodules today, not
+# a guarantee, so it is listed directly rather than relied on implicitly.
 set(CPACK_DEBIAN_PACKAGE_DEPENDS
-    "nordvpn, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-org-kde-kirigami, qml6-module-org-kde-kirigamiaddons-formcard")
+    "nordvpn, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-org-kde-kirigami, qml6-module-org-kde-kirigamiaddons-formcard, qml6-module-org-kde-desktop")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_RPM_PACKAGE_LICENSE "GPL-3.0-or-later")
 set(CPACK_RPM_PACKAGE_GROUP "Applications/Internet")
-set(CPACK_RPM_PACKAGE_REQUIRES "nordvpn, qt6-qtdeclarative, kf6-kirigami, kf6-kirigami-addons")
+# kf6-qqc2-desktop-style is the Fedora name for the same "org.kde.desktop"
+# style covered by qml6-module-org-kde-desktop on Debian, above -- and unlike
+# Debian, nothing in kf6-kirigami-addons' Requires pulls it in transitively
+# on Fedora, confirmed missing from `dnf repoquery --requires
+# kf6-kirigami-addons` and reproduced as the same hard QML-load failure by
+# installing this .rpm in a bare Fedora container.
+set(CPACK_RPM_PACKAGE_REQUIRES "nordvpn, qt6-qtdeclarative, kf6-kirigami, kf6-kirigami-addons, kf6-qqc2-desktop-style")
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
 include(CPack)

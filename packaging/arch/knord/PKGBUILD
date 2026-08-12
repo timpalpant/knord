@@ -1,7 +1,7 @@
 # Maintainer: Tim Palpant <tim@palpant.us>
 
 pkgname=knord
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="Native Kirigami front end for NordVPN"
 arch=('x86_64' 'aarch64')
@@ -23,9 +23,13 @@ depends=(
   # the virtual name rather than nordvpn-bin, so any package providing the CLI
   # satisfies it.
   'nordvpn'
-)
-optdepends=(
-  'qqc2-desktop-style: native look outside Plasma'
+  # Not optional: main.cpp selects the "org.kde.desktop" QQC2 style, and
+  # without this package providing it the QML engine refuses to load at all
+  # ("module \"org.kde.desktop\" is not installed"), confirmed by installing
+  # a bare .deb/.rpm build of knord in a fresh container with none of
+  # Plasma's own dependencies pre-satisfied and forcing that style via
+  # QT_QUICK_CONTROLS_STYLE. Not a look-and-feel nicety outside Plasma.
+  'qqc2-desktop-style'
 )
 makedepends=('cmake' 'ninja')
 # Note: extra-cmake-modules is deliberately not required; each KF6 component is
@@ -39,7 +43,7 @@ source=("$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/$pkgname-$pkgv
 # from knord-$pkgver.tar.gz.sha256 in the release; the release workflow prints
 # the line to paste. An unreplaced placeholder fails the build, which is the
 # point -- a wrong hash must stop the build, not be waved through.
-sha256sums=('e4b3e36fcae517c4ffabaf050ad572f04f330de96ecd0aa12998428145211d8d')
+sha256sums=('REPLACE_WITH_RELEASE_SHA256')
 
 build() {
   cmake -B build -S "$pkgname-$pkgver" -G Ninja \

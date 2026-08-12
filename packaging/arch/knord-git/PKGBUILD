@@ -22,9 +22,9 @@ depends=(
   'kwindowsystem'
   # See the release PKGBUILD: virtual name, not nordvpn-bin.
   'nordvpn'
-)
-optdepends=(
-  'qqc2-desktop-style: native look outside Plasma'
+  # See the release PKGBUILD: not optional, the QML engine refuses to load
+  # at all without it.
+  'qqc2-desktop-style'
 )
 makedepends=('cmake' 'ninja' 'git')
 provides=("$_pkgname=$pkgver")
