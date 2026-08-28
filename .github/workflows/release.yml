@@ -119,9 +119,17 @@ jobs:
           if-no-files-found: error
 
   archpkg:
-    name: Arch package
+    name: Arch package (${{ matrix.arch }})
     needs: verify
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     container: archlinux:latest
     steps:
       - name: Install dependencies
@@ -148,7 +156,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: arch-package
+          name: arch-package-${{ matrix.arch }}
           path: |
             dist/*.pkg.tar.zst
             dist/*.pkg.tar.zst.sha256
@@ -290,6 +298,9 @@ jobs:
           files: artifacts/*
           body: |
             ### Install
+
+            Arch packages are available for both x86_64 and aarch64; download
+            the asset matching your machine.
 
             **Arch Linux** — install the attached package directly:
 
