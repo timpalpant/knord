@@ -111,7 +111,9 @@ makepkg_args=(-sf --noconfirm --noprogressbar)
 if [[ "$skip_dependency_check" == true ]]; then
     makepkg_args+=(--nodeps)
 fi
-makepkg "${makepkg_args[@]}"
+# Set PKGDEST explicitly: some Arch Linux ARM container images configure it
+# globally, which would otherwise place the finished package outside workdir.
+PKGDEST="$workdir" makepkg "${makepkg_args[@]}"
 
 mkdir -p "$outdir"
 mv ./*.pkg.tar.zst "$outdir/"
