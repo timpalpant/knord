@@ -156,14 +156,16 @@ jobs:
     runs-on: ${{ matrix.runner }}
     container: ${{ matrix.container }}
     steps:
-      - name: Disable pacman's download sandbox in the ARM container
+      - name: Configure the Arch Linux ARM container
         if: matrix.arch == 'aarch64'
-        run: sed -i '/^\[options\]/a DisableSandbox' /etc/pacman.conf
+        run: |
+          sed -i '/^\[options\]/a DisableSandbox' /etc/pacman.conf
+          sed -i "s/^PKGEXT=.*/PKGEXT='.pkg.tar.zst'/" /etc/makepkg.conf
 
       - name: Install dependencies
         run: |
           pacman -Syu --noconfirm --needed \
-            base-devel cmake ninja git pacman-contrib \
+            base-devel cmake ninja git pacman-contrib zstd \
             qt6-base qt6-declarative qt6-tools \
             kirigami kirigami-addons ki18n kcoreaddons kconfig \
             knotifications kiconthemes kstatusnotifieritem kwindowsystem \
