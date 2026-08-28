@@ -43,7 +43,7 @@ source=("$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/$pkgname-$pkgv
 # from knord-$pkgver.tar.gz.sha256 in the release; the release workflow prints
 # the line to paste. An unreplaced placeholder fails the build, which is the
 # point -- a wrong hash must stop the build, not be waved through.
-sha256sums=('REPLACE_WITH_RELEASE_SHA256')
+sha256sums=('f3b0c0584f9b8782fe1daf23276602acdcff257d5700a067cbaf0f5618fa442b')
 
 build() {
   cmake -B build -S "$pkgname-$pkgver" -G Ninja \
