@@ -83,11 +83,12 @@ Install the official NordVPN client first: it supplies the required
 
 ### Flatpak
 
-Download `knord.flatpak` from the
+Download `knord-x86_64.flatpak` or `knord-aarch64.flatpak` (to match your
+machine) from the
 [latest release](https://github.com/timpalpant/knord/releases), then:
 
 ```sh
-flatpak install --user knord.flatpak
+flatpak install --user knord-<architecture>.flatpak
 flatpak run io.github.timpalpant.knord
 ```
 

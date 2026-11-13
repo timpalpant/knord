@@ -3,7 +3,7 @@
 # Five artifacts are published, plus a checksum for each:
 #   1. knord-X.Y.Z.tar.gz         source bundle (pinned by the release PKGBUILD)
 #   2. knord-X.Y.Z-*.pkg.tar.zst  Arch package, built with the release PKGBUILD
-#   3. knord.flatpak              single-file Flatpak bundle
+#   3. knord-<arch>.flatpak       single-file Flatpak bundle, per architecture
 #   4. knord_*.deb                 Debian package
 #   5. knord-*.rpm                 RPM package
 #
@@ -171,9 +171,17 @@ jobs:
           if-no-files-found: error
 
   deb:
-    name: Debian package
+    name: Debian package (${{ matrix.arch }})
     needs: verify
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     container: debian:trixie
     steps:
       - name: Install dependencies
@@ -203,16 +211,24 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: deb-package
+          name: deb-package-${{ matrix.arch }}
           path: |
             dist/*.deb
             dist/*.deb.sha256
           if-no-files-found: error
 
   rpm:
-    name: RPM package
+    name: RPM package (${{ matrix.arch }})
     needs: verify
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     container: registry.fedoraproject.org/fedora:latest
     steps:
       - name: Install dependencies
@@ -240,16 +256,24 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: rpm-package
+          name: rpm-package-${{ matrix.arch }}
           path: |
             dist/*.rpm
             dist/*.rpm.sha256
           if-no-files-found: error
 
   flatpak:
-    name: Flatpak bundle
+    name: Flatpak bundle (${{ matrix.arch }})
     needs: verify
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7
 
@@ -272,16 +296,16 @@ jobs:
           flatpak-builder --user --disable-rofiles-fuse --force-clean \
             --repo=flatpak-repo build-flatpak \
             packaging/flatpak/io.github.timpalpant.knord.ci.yml
-          flatpak build-bundle flatpak-repo knord.flatpak \
+          flatpak build-bundle flatpak-repo knord-${{ matrix.arch }}.flatpak \
             io.github.timpalpant.knord
-          sha256sum knord.flatpak > knord.flatpak.sha256
+          sha256sum knord-${{ matrix.arch }}.flatpak > knord-${{ matrix.arch }}.flatpak.sha256
 
       - uses: actions/upload-artifact@v7
         with:
-          name: flatpak-bundle
+          name: flatpak-bundle-${{ matrix.arch }}
           path: |
-            knord.flatpak
-            knord.flatpak.sha256
+            knord-${{ matrix.arch }}.flatpak
+            knord-${{ matrix.arch }}.flatpak.sha256
           if-no-files-found: error
 
   publish:
@@ -307,8 +331,9 @@ jobs:
           body: |
             ### Install
 
-            Arch packages are available for both x86_64 and aarch64; download
-            the asset matching your machine.
+            Native packages are available for both x86_64/amd64 and
+            aarch64/arm64. Download the asset matching your machine before
+            using the commands below.
 
             **Arch Linux** — install the attached package directly:
 
@@ -328,10 +353,10 @@ jobs:
             sudo dnf install ./knord-*.rpm
             ```
 
-            **Flatpak** — download `knord.flatpak`, then:
+            **Flatpak** — download the matching `knord-<architecture>.flatpak`, then:
 
             ```sh
-            flatpak install --user knord.flatpak
+            flatpak install --user knord-<architecture>.flatpak
             flatpak run io.github.timpalpant.knord
             ```
 
